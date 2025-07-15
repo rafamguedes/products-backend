@@ -6,19 +6,29 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
 func Connect() {
-	host := getEnv("DB_HOST", "localhost")
-	port := getEnv("DB_PORT", "5432")
-	user := getEnv("DB_USER", "admin")
-	password := getEnv("DB_PASSWORD", "admin123")
-	dbname := getEnv("DB_NAME", "products_db")
+	// Em produção (Railway), as variáveis já estarão disponíveis no ambiente
+	// Localmente, carregamos do .env se existir
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("Warning: Não foi possível carregar o arquivo .env:", err)
+		}
+	}
 
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	host := getEnv("PGHOST", getEnv("DB_HOST", "localhost"))
+	port := getEnv("PGPORT", getEnv("DB_PORT", "5432"))
+	user := getEnv("PGUSER", getEnv("DB_USER", "postgres"))
+	password := getEnv("PGPASSWORD", getEnv("DB_PASSWORD", ""))
+	dbname := getEnv("PGDATABASE", getEnv("DB_NAME", "products_db"))
+
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		host, port, user, password, dbname)
 
 	var err error
