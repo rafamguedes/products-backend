@@ -13,8 +13,6 @@ import (
 var DB *sql.DB
 
 func Connect() {
-	// Em produção (Railway), as variáveis já estarão disponíveis no ambiente
-	// Localmente, carregamos do .env se existir
 	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
 		err := godotenv.Load()
 		if err != nil {
