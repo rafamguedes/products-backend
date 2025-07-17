@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -21,14 +20,8 @@ func Connect() {
 		password := getEnv("PGPASSWORD", "admin123")
 		dbname := getEnv("PGDATABASE", "products_db")
 
-		dbURL = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
+		dbURL = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 			host, port, user, password, dbname)
-	}
-
-	if os.Getenv("RAILWAY_ENVIRONMENT") == "production" || os.Getenv("DATABASE_URL") != "" {
-		if !strings.Contains(dbURL, "sslmode=") {
-			dbURL += " sslmode=require"
-		}
 	}
 
 	var err error
