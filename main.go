@@ -12,7 +12,6 @@ import (
 )
 
 func main() {
-	// Conectar ao banco de dados
 	database.Connect()
 	defer database.DB.Close()
 

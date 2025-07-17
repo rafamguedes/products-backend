@@ -289,8 +289,14 @@ func (r *ProductRepository) FindByFilter(filter models.ProductFilter, nextToken 
 		argIndex++
 	}
 
+	// Get total count (create a copy of args without the limit parameter)
 	var total int
-	err := r.db.QueryRow(countQuery+conditions, args[:len(args)-1]...).Scan(&total)
+	var countArgs []interface{}
+	if len(args) > 0 {
+		countArgs = make([]interface{}, len(args))
+		copy(countArgs, args)
+	}
+	err := r.db.QueryRow(countQuery+conditions, countArgs...).Scan(&total)
 	if err != nil {
 		return nil, 0, err
 	}
