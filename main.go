@@ -15,28 +15,21 @@ func main() {
 	database.Connect()
 	defer database.DB.Close()
 
-	// Configurar o ambiente
 	if os.Getenv("GIN_MODE") == "release" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// Inicializar o router
 	router := gin.Default()
 
-	// Middleware para logging
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	// Inicializar repositórios
 	productRepo := repositories.NewProductRepository(database.DB)
 
-	// Inicializar handlers
 	productHandler := handlers.NewProductHandler(productRepo)
 
-	// Configurar rotas
 	routes.SetupRoutes(router, productHandler)
 
-	// Obter porta do ambiente ou usar padrão
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -46,7 +39,6 @@ func main() {
 	log.Printf("Acesse http://localhost:%s/health para verificar o status", port)
 	log.Printf("API disponível em http://localhost:%s/api/v1/products", port)
 
-	// Iniciar o servidor
 	if err := router.Run(":" + port); err != nil {
 		log.Fatal("Erro ao iniciar o servidor:", err)
 	}
