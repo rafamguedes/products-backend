@@ -243,3 +243,102 @@ func (h *ProductHandler) GetProductsByCategory(c *gin.Context) {
 		"category": category,
 	})
 }
+
+// FindByFilter godoc
+// @Summary Busca produtos com filtros e paginação
+// @Description Retorna produtos filtrados com paginação nextToken
+// @Tags produtos
+// @Accept json
+// @Produce json
+// @Param name query string false "Nome do produto (busca parcial)"
+// @Param category query string false "Categoria do produto"
+// @Param min_price query number false "Preço mínimo"
+// @Param max_price query number false "Preço máximo"
+// @Param min_stock query int false "Estoque mínimo"
+// @Param max_stock query int false "Estoque máximo"
+// @Param row query int false "ID da última linha (para paginação)"
+// @Param order query string false "Ordem de classificação (asc ou desc)" Enums(asc, desc)
+// @Param limit query int false "Limite de resultados por página (padrão: 10)"
+// @Success 200 {object} models.ProductFilterResponse
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /products/filter [get]
+func (h *ProductHandler) FindByFilter(c *gin.Context) {
+	var filter models.ProductFilter
+	var nextToken models.NextTokenRequest
+
+	// Bind query parameters to filter
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Parâmetros de filtro inválidos",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Bind query parameters to nextToken
+	if err := c.ShouldBindQuery(&nextToken); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Parâmetros de paginação inválidos",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Validate order parameter
+	if nextToken.Order != "" && nextToken.Order != "asc" && nextToken.Order != "desc" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Parâmetro 'order' deve ser 'asc' ou 'desc'",
+		})
+		return
+	}
+
+	// Set default order if not provided
+	if nextToken.Order == "" {
+		nextToken.Order = "desc"
+	}
+
+	// Set default limit if not provided or invalid
+	if nextToken.Limit <= 0 {
+		nextToken.Limit = 10
+	}
+
+	// Validate limit range
+	if nextToken.Limit > 100 {
+		nextToken.Limit = 100
+	}
+
+	products, total, err := h.productRepo.FindByFilter(filter, nextToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Erro ao buscar produtos com filtros",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Check if there are more results
+	hasMore := len(products) > nextToken.Limit
+	if hasMore {
+		// Remove the extra product we fetched
+		products = products[:nextToken.Limit]
+	}
+
+	response := models.ProductFilterResponse{
+		Data:    products,
+		Total:   total,
+		HasMore: hasMore,
+	}
+
+	// Set next token if there are more results
+	if hasMore && len(products) > 0 {
+		lastProduct := products[len(products)-1]
+		response.NextToken = &models.NextTokenRequest{
+			Row:   lastProduct.ID,
+			Order: nextToken.Order,
+			Limit: nextToken.Limit,
+		}
+	}
+
+	c.JSON(http.StatusOK, response)
+}

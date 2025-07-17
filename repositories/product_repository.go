@@ -224,3 +224,115 @@ func (r *ProductRepository) GetByCategory(category string) ([]models.Product, er
 
 	return products, nil
 }
+
+func (r *ProductRepository) FindByFilter(filter models.ProductFilter, nextToken models.NextTokenRequest) ([]models.Product, int, error) {
+	baseQuery := `
+		SELECT id, name, description, price, category, stock_quantity, created_at, updated_at
+		FROM products
+		WHERE 1=1
+	`
+
+	countQuery := `
+		SELECT COUNT(*)
+		FROM products
+		WHERE 1=1
+	`
+
+	var args []interface{}
+	var conditions string
+	argIndex := 1
+
+	// Build filter conditions
+	if filter.Name != "" {
+		conditions += fmt.Sprintf(" AND name ILIKE $%d", argIndex)
+		args = append(args, "%"+filter.Name+"%")
+		argIndex++
+	}
+
+	if filter.Category != "" {
+		conditions += fmt.Sprintf(" AND category = $%d", argIndex)
+		args = append(args, filter.Category)
+		argIndex++
+	}
+
+	if filter.MinPrice != nil {
+		conditions += fmt.Sprintf(" AND price >= $%d", argIndex)
+		args = append(args, *filter.MinPrice)
+		argIndex++
+	}
+
+	if filter.MaxPrice != nil {
+		conditions += fmt.Sprintf(" AND price <= $%d", argIndex)
+		args = append(args, *filter.MaxPrice)
+		argIndex++
+	}
+
+	if filter.MinStock != nil {
+		conditions += fmt.Sprintf(" AND stock_quantity >= $%d", argIndex)
+		args = append(args, *filter.MinStock)
+		argIndex++
+	}
+
+	if filter.MaxStock != nil {
+		conditions += fmt.Sprintf(" AND stock_quantity <= $%d", argIndex)
+		args = append(args, *filter.MaxStock)
+		argIndex++
+	}
+
+	if nextToken.Row > 0 {
+		if nextToken.Order == "asc" {
+			conditions += fmt.Sprintf(" AND id > $%d", argIndex)
+		} else {
+			conditions += fmt.Sprintf(" AND id < $%d", argIndex)
+		}
+		args = append(args, nextToken.Row)
+		argIndex++
+	}
+
+	var total int
+	err := r.db.QueryRow(countQuery+conditions, args[:len(args)-1]...).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	orderClause := " ORDER BY id DESC"
+	if nextToken.Order == "asc" {
+		orderClause = " ORDER BY id ASC"
+	}
+
+	limit := nextToken.Limit
+	if limit == 0 {
+		limit = 10
+	}
+
+	limitClause := fmt.Sprintf(" LIMIT $%d", argIndex)
+	args = append(args, limit+1)
+
+	finalQuery := baseQuery + conditions + orderClause + limitClause
+	rows, err := r.db.Query(finalQuery, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var products []models.Product
+	for rows.Next() {
+		var product models.Product
+		err := rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.Category,
+			&product.StockQuantity,
+			&product.CreatedAt,
+			&product.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		products = append(products, product)
+	}
+
+	return products, total, nil
+}

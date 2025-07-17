@@ -24,6 +24,7 @@ func SetupRoutes(router *gin.Engine, productHandler *handlers.ProductHandler) {
 		products := v1.Group("/products")
 		{
 			products.GET("", productHandler.GetProducts)
+			products.GET("/filter", productHandler.FindByFilter)
 			products.GET("/:id", productHandler.GetProduct)
 			products.POST("", productHandler.CreateProduct)
 			products.PUT("/:id", productHandler.UpdateProduct)
