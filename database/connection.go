@@ -22,11 +22,11 @@ func Connect() {
 
 	host := getEnv("PGHOST", getEnv("DB_HOST", "localhost"))
 	port := getEnv("PGPORT", getEnv("DB_PORT", "5432"))
-	user := getEnv("PGUSER", getEnv("DB_USER", "postgres"))
-	password := getEnv("PGPASSWORD", getEnv("DB_PASSWORD", ""))
+	user := getEnv("PGUSER", getEnv("DB_USER", "admin"))
+	password := getEnv("PGPASSWORD", getEnv("DB_PASSWORD", "admin123"))
 	dbname := getEnv("PGDATABASE", getEnv("DB_NAME", "products_db"))
 
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	var err error
