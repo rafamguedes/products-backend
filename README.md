@@ -50,11 +50,13 @@ A API estará disponível em: `http://localhost:8080`
 
 ### Produtos
 - `GET /api/v1/products` - Lista todos os produtos
+- `GET /api/v1/products/filter` - Busca produtos com filtros e paginação nextToken
 - `GET /api/v1/products/:id` - Busca produto por ID
 - `POST /api/v1/products` - Cria um novo produto
 - `PUT /api/v1/products/:id` - Atualiza um produto
 - `DELETE /api/v1/products/:id` - Remove um produto
 - `GET /api/v1/products/category/:category` - Lista produtos por categoria
+
 
 ## 📄 Exemplos de Uso
 
@@ -101,7 +103,61 @@ curl -X DELETE http://localhost:8080/api/v1/products/1
 curl http://localhost:8080/api/v1/products/category/Eletrônicos
 ```
 
-## 🗄️ Estrutura do Banco de Dados
+### Buscar produtos com filtros e paginação
+```bash
+# Busca básica com filtros
+curl "http://localhost:8080/api/v1/products/filter?name=smartphone&category=Eletrônicos&min_price=100&max_price=1000&limit=5"
+
+# Busca com paginação (próxima página)
+curl "http://localhost:8080/api/v1/products/filter?name=smartphone&row=10&order=desc&limit=5"
+
+# Busca por faixa de preço
+curl "http://localhost:8080/api/v1/products/filter?min_price=500&max_price=2000&order=asc&limit=10"
+
+# Busca por estoque disponível
+curl "http://localhost:8080/api/v1/products/filter?min_stock=1&order=desc&limit=20"
+```
+
+#### Parâmetros disponíveis para /products/filter:
+- `name` - Nome do produto (busca parcial, case-insensitive)
+- `category` - Categoria exata do produto
+- `min_price` - Preço mínimo
+- `max_price` - Preço máximo
+- `min_stock` - Estoque mínimo
+- `max_stock` - Estoque máximo
+- `row` - ID da última linha para paginação (nextToken)
+- `order` - Ordem de classificação: `asc` ou `desc` (padrão: `desc`)
+- `limit` - Limite de resultados por página (padrão: 10, máximo: 100)
+
+## � Sistema de Paginação NextToken
+
+O endpoint `/api/v1/products/filter` utiliza um sistema de paginação baseado em **nextToken** para navegação eficiente entre páginas:
+
+### Como funciona:
+1. **Primeira requisição**: Faça a busca sem o parâmetro `row`
+2. **Resposta**: A API retorna os dados e um `next_token` se houver mais resultados
+3. **Próxima página**: Use o valor `row` do `next_token` na próxima requisição
+
+### Exemplo de resposta:
+```json
+{
+  "data": [...], 
+  "total": 150,
+  "has_more": true,
+  "next_token": {
+    "row": 25,
+    "order": "desc",
+    "limit": 10
+  }
+}
+```
+
+### Vantagens do NextToken:
+- ✅ Performance consistente mesmo com grandes volumes de dados
+- ✅ Resultados estáveis (não duplica/pula registros em inserções)
+- ✅ Mais eficiente que OFFSET/LIMIT tradicional
+
+## �🗄️ Estrutura do Banco de Dados
 
 ### Tabela: products
 ```sql
