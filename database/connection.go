@@ -36,12 +36,10 @@ func Connect() error {
 
 	log.Println("Conectado ao banco de dados PostgreSQL com sucesso!")
 
-	// Cria a tabela se não existir
 	if err := createTables(); err != nil {
 		return fmt.Errorf("erro ao criar tabelas: %w", err)
 	}
 
-	// Insere dados iniciais
 	if err := seedInitialData(); err != nil {
 		return fmt.Errorf("erro ao inserir dados iniciais: %w", err)
 	}
@@ -66,20 +64,16 @@ func createTables() error {
 }
 
 func seedInitialData() error {
-	// Verifica se a tabela já tem dados
 	var count int
 	err := DB.QueryRow("SELECT COUNT(*) FROM products").Scan(&count)
 	if err != nil {
-		// A tabela provavelmente não existe ou há outro erro
 		return nil
 	}
 
 	if count > 0 {
-		// Já existem dados, não precisa inserir novamente
 		return nil
 	}
 
-	// Insere os dados iniciais
 	_, err = DB.Exec(`
 		INSERT INTO products (name, description, price, category, stock_quantity) VALUES
 		('Smartphone Samsung Galaxy S23', 'Smartphone Android com 256GB de armazenamento', 2999.99, 'Eletrônicos', 50),
