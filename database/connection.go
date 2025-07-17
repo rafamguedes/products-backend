@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -12,17 +13,26 @@ import (
 var DB *sql.DB
 
 func Connect() {
-	host := getEnv("PGHOST", getEnv("DB_HOST", "localhost"))
-	port := getEnv("PGPORT", getEnv("DB_PORT", "5432"))
-	user := getEnv("PGUSER", getEnv("DB_USER", "admin"))
-	password := getEnv("PGPASSWORD", getEnv("DB_PASSWORD", "admin123"))
-	dbname := getEnv("PGDATABASE", getEnv("DB_NAME", "products_db"))
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		host := getEnv("PGHOST", "localhost")
+		port := getEnv("PGPORT", "5432")
+		user := getEnv("PGUSER", "admin")
+		password := getEnv("PGPASSWORD", "admin123")
+		dbname := getEnv("PGDATABASE", "products_db")
 
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		dbURL = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s",
+			host, port, user, password, dbname)
+	}
+
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "production" || os.Getenv("DATABASE_URL") != "" {
+		if !strings.Contains(dbURL, "sslmode=") {
+			dbURL += " sslmode=require"
+		}
+	}
 
 	var err error
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatal("Erro ao conectar com o banco de dados:", err)
 	}
