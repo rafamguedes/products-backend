@@ -6,20 +6,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
 func Connect() {
-	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Println("Warning: Não foi possível carregar o arquivo .env:", err)
-		}
-	}
-
 	host := getEnv("PGHOST", getEnv("DB_HOST", "localhost"))
 	port := getEnv("PGPORT", getEnv("DB_PORT", "5432"))
 	user := getEnv("PGUSER", getEnv("DB_USER", "admin"))
