@@ -5,9 +5,9 @@
     "swagger": "2.0",
     "info": {
         "description": "API para gerenciamento de produtos usando Gin e Swagger",
-        "title": "Products Backend API",
+        "title": "Products Backend API Golang",
         "contact": {},
-        "version": "1.0"
+        "version": "1.0.0"
     },
     "host": "products-backend-production-a43e.up.railway.app",
     "paths": {

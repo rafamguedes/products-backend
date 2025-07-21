@@ -547,16 +547,14 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "1.0.0",
 	Host:             "products-backend-production-a43e.up.railway.app",
 	BasePath:         "",
 	Schemes:          []string{"https"},
-	Title:            "Products Backend API",
+	Title:            "Products Backend API Golang",
 	Description:      "API para gerenciamento de produtos usando Gin e Swagger",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

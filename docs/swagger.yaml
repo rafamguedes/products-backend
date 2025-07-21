@@ -76,8 +76,8 @@ host: products-backend-production-a43e.up.railway.app
 info:
   contact: {}
   description: API para gerenciamento de produtos usando Gin e Swagger
-  title: Products Backend API
-  version: "1.0"
+  title: Products Backend API Golang
+  version: 1.0.0
 paths:
   /products:
     get:
