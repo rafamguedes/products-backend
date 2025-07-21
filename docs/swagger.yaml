@@ -1,0 +1,359 @@
+definitions:
+  models.CreateProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      stock_quantity:
+        type: integer
+    required:
+    - name
+    - price
+    type: object
+  models.NextTokenRequest:
+    properties:
+      limit:
+        type: integer
+      order:
+        type: string
+      row:
+        type: integer
+    type: object
+  models.Product:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      stock_quantity:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - name
+    - price
+    type: object
+  models.ProductFilterResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.Product'
+        type: array
+      has_more:
+        type: boolean
+      next_token:
+        $ref: '#/definitions/models.NextTokenRequest'
+      total:
+        type: integer
+    type: object
+  models.UpdateProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      stock_quantity:
+        type: integer
+    type: object
+host: products-backend-production-a43e.up.railway.app
+info:
+  contact: {}
+  description: API para gerenciamento de produtos usando Gin e Swagger
+  title: Products Backend API
+  version: "1.0"
+paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todos os produtos cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista todos os produtos
+      tags:
+      - produtos
+    post:
+      consumes:
+      - application/json
+      description: Adiciona um novo produto ao sistema
+      parameters:
+      - description: Dados do produto
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cria um novo produto
+      tags:
+      - produtos
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove um produto específico do sistema
+      parameters:
+      - description: ID do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remove um produto
+      tags:
+      - produtos
+    get:
+      consumes:
+      - application/json
+      description: Retorna um produto específico pelo ID
+      parameters:
+      - description: ID do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca um produto por ID
+      tags:
+      - produtos
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um produto específico
+      parameters:
+      - description: ID do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do produto
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Atualiza um produto existente
+      tags:
+      - produtos
+  /products/category/{category}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todos os produtos de uma categoria específica
+      parameters:
+      - description: Categoria
+        in: path
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista produtos por categoria
+      tags:
+      - produtos
+  /products/filter:
+    get:
+      consumes:
+      - application/json
+      description: Retorna produtos filtrados com paginação nextToken
+      parameters:
+      - description: Nome do produto (busca parcial)
+        in: query
+        name: name
+        type: string
+      - description: Categoria do produto
+        in: query
+        name: category
+        type: string
+      - description: Preço mínimo
+        in: query
+        name: min_price
+        type: number
+      - description: Preço máximo
+        in: query
+        name: max_price
+        type: number
+      - description: Estoque mínimo
+        in: query
+        name: min_stock
+        type: integer
+      - description: Estoque máximo
+        in: query
+        name: max_stock
+        type: integer
+      - description: ID da última linha (para paginação)
+        in: query
+        name: row
+        type: integer
+      - description: Ordem de classificação (asc ou desc)
+        enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - description: 'Limite de resultados por página (padrão: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ProductFilterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca produtos com filtros e paginação
+      tags:
+      - produtos
+schemes:
+- https
+swagger: "2.0"

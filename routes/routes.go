@@ -2,7 +2,10 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/seuusuario/api-rest-go/docs"
 	"github.com/seuusuario/api-rest-go/handlers"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRoutes(router *gin.Engine, productHandler *handlers.ProductHandler) {
@@ -18,6 +21,8 @@ func SetupRoutes(router *gin.Engine, productHandler *handlers.ProductHandler) {
 
 		c.Next()
 	})
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := router.Group("/api/v1")
 	{

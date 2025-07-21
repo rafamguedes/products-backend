@@ -11,6 +11,12 @@ import (
 	"github.com/seuusuario/api-rest-go/routes"
 )
 
+// @title Products Backend API
+// @version 1.0
+// @description API para gerenciamento de produtos usando Gin e Swagger
+
+// @host products-backend-production-a43e.up.railway.app
+// @schemes https
 func main() {
 	database.Connect()
 	defer database.DB.Close()
