@@ -12,7 +12,7 @@ import (
 )
 
 // @title Products Backend API
-// @version 1.0
+// @version 1.0.0
 // @description API para gerenciamento de produtos usando Gin e Swagger
 
 // @host products-backend-production-a43e.up.railway.app
