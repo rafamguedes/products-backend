@@ -11,7 +11,7 @@ import (
 	"github.com/seuusuario/api-rest-go/routes"
 )
 
-// @title Products Backend API
+// @title Products Backend API Golang
 // @version 1.0.0
 // @description API para gerenciamento de produtos usando Gin e Swagger
 
