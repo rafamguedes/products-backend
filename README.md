@@ -4,15 +4,13 @@ Uma API REST completa para gerenciamento de produtos, construída com Go, Gin Fr
 
 ## 📖 Documentação da API (Swagger)
 
-A documentação completa da API está disponível através do Swagger UI:
+A documentação da API está disponível através do Swagger UI:
 
 ### 🌐 **Produção**
 - **Swagger UI**: https://products-backend-production-a43e.up.railway.app/swagger/index.html
-- **API Base URL**: https://products-backend-production-a43e.up.railway.app/api/v1
 
 ### 🏠 **Desenvolvimento Local**
 - **Swagger UI**: http://localhost:8080/swagger/index.html
-- **API Base URL**: http://localhost:8080/api/v1
 
 > 💡 **Dica**: Use o Swagger UI para testar todos os endpoints interativamente, ver exemplos de request/response e entender a estrutura completa da API.
 
