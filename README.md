@@ -1,6 +1,6 @@
 # API REST de Produtos em Go
 
-Uma API REST completa para gerenciamento de produtos, construída com Go, Gin Framework e PostgreSQL.
+Uma API REST para gerenciamento de produtos, construída com Go, Gin Framework e PostgreSQL.
 
 ## 📖 Documentação da API (Swagger)
 
