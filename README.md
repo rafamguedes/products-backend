@@ -12,8 +12,6 @@ A documentação da API está disponível através do Swagger UI:
 ### 🏠 **Desenvolvimento Local**
 - **Swagger UI**: http://localhost:8080/swagger/index.html
 
-> 💡 **Dica**: Use o Swagger UI para testar todos os endpoints interativamente, ver exemplos de request/response e entender a estrutura completa da API.
-
 ## 🚀 Funcionalidades
 
 - ✅ CRUD completo de produtos
@@ -192,9 +190,9 @@ curl "http://localhost:8080/api/v1/products/filter?min_stock=1&order=desc&limit=
 - `order` - Ordem de classificação: `asc` ou `desc` (padrão: `desc`)
 - `limit` - Limite de resultados por página (padrão: 10, máximo: 100)
 
-## 🔄 Sistema de Paginação NextToken
+## 🔄 Sistema de Paginação
 
-O endpoint `/api/v1/products/filter` utiliza um sistema de paginação baseado em **nextToken** para navegação eficiente entre páginas:
+O endpoint `/api/v1/products/filter` utiliza um sistema de paginação para navegação eficiente entre páginas:
 
 ### Como funciona:
 1. **Primeira requisição**: Faça a busca sem o parâmetro `row`
@@ -214,11 +212,6 @@ O endpoint `/api/v1/products/filter` utiliza um sistema de paginação baseado e
   }
 }
 ```
-
-### Vantagens do NextToken:
-- ✅ Performance consistente mesmo com grandes volumes de dados
-- ✅ Resultados estáveis (não duplica/pula registros em inserções)
-- ✅ Mais eficiente que OFFSET/LIMIT tradicional
 
 ## 🗄️ Estrutura do Banco de Dados
 
@@ -318,12 +311,6 @@ A aplicação está configurada para deploy automático na Railway:
 2. Configure as variáveis de ambiente de produção
 3. A Railway automaticamente detecta e faz o build da aplicação Go
 
-### Arquivos de Deploy Incluídos:
-- `railway.toml` - Configuração da Railway
-- `Dockerfile.railway` - Build otimizado para produção
-- `railway.json` - Configurações de build
-- `.env.production` - Variáveis de ambiente de produção
-
 ## 📊 Monitoramento
 
 ### Health Checks
@@ -343,15 +330,3 @@ A API inclui endpoints de monitoramento:
 - ✅ Arquitetura em camadas (handlers, repositories, models)
 - ✅ Paginação eficiente com NextToken
 - ✅ Suporte a filtros avançados de busca
-
-## 🔗 Links Úteis
-
-- **API em Produção**: https://products-backend-production-a43e.up.railway.app
-- **Swagger UI (Produção)**: https://products-backend-production-a43e.up.railway.app/swagger/index.html
-- **Railway Dashboard**: https://railway.app
-- **Documentação do Gin**: https://gin-gonic.com
-- **Documentação do Swagger**: https://swagger.io
-
----
-
-**🎉 API REST de Produtos pronta para produção com documentação completa!**
